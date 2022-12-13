@@ -15,32 +15,38 @@ void setup()
  Serial.begin(9600);  
  
 } 
-
+void send_to_dimmer(int ADDRESS, int outByte){
+  Wire.beginTransmission(ADDRESS);    // transmit to device 1
+  Wire.write(outByte);                      // sends ONE bytes
+  Wire.endTransmission();
+}
 void loop() 
 { 
 
   for (i=0; i<100; i=i+1){
-    Wire.beginTransmission(ADDRESS1);    // transmit to device 1
-    Wire.write(i);                      // sends ONE bytes
-    Wire.endTransmission();             // stop transmitting
-    /*Wire.beginTransmission(ADDRESS2);    // transmit to device 2
-    Wire.write(100-i);                      // sends ONE bytes
-    Wire.endTransmission();*/
+//    Wire.beginTransmission(ADDRESS1);    // transmit to device 1
+//    Wire.write(i);                      // sends ONE bytes
+//    Wire.endTransmission();             // stop transmitting
+//    Wire.beginTransmission(ADDRESS2);    // transmit to device 2
+//    Wire.write(100-i);                      // sends ONE bytes
+//    Wire.endTransmission();
     Serial.print("i");
     Serial.println(i);
+    send_to_dimmer(ADDRESS1, i);
     delay(500); 
   }
 
   for (i=100; i>0; i=i-1){
   
-    Wire.beginTransmission(ADDRESS1);    // transmit to device 1
-    Wire.write(i);                      // sends ONE bytes
-    Wire.endTransmission();             // stop transmitting
-    /*Wire.beginTransmission(ADDRESS2);    // transmit to device 2
-    Wire.write(100-i);                      // sends ONE bytes
-    Wire.endTransmission();*/
+    //    Wire.beginTransmission(ADDRESS1);    // transmit to device 1
+//    Wire.write(i);                      // sends ONE bytes
+//    Wire.endTransmission();             // stop transmitting
+//    Wire.beginTransmission(ADDRESS2);    // transmit to device 2
+//    Wire.write(100-i);                      // sends ONE bytes
+//    Wire.endTransmission();
     Serial.print("i");
     Serial.println(i);
+    send_to_dimmer(ADDRESS1, i);
     delay(500); 
   }
 
