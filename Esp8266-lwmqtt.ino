@@ -13,6 +13,23 @@
  * limitations under the License.
  *****************************************************************************/
 
+#include <Arduino.h>
+#include <Wire.h>
+
+
+#define ADDRESS1 0x10
+#define ADDRESS2 0x11
+// 30-170
+
+int pwm;
+
+
+void send_to_dimmer(int ADDRESS, int outByte){
+  Wire.beginTransmission(ADDRESS);    // transmit to device 1
+  Wire.write(outByte);                      // sends ONE bytes
+  Wire.endTransmission();
+}
+
 #if defined(ARDUINO_SAMD_MKR1000) or defined(ESP32)
 #define __SKIP_ESP8266__
 #endif
@@ -23,7 +40,7 @@
 
 #ifdef __SKIP_ESP8266__
 
-#include <Arduino.h>
+
 
 void setup(){
   Serial.begin(115200);
@@ -51,6 +68,7 @@ void setup()
   // put your setup code here, to run once:
   Serial.begin(115200);
   Serial.println("Hello World");
+  Wire.begin();
   timeClient.begin();
   timeClient.setTimeOffset(0);
   setupCloudIoT(); // Creates globals for MQTT
@@ -68,7 +86,7 @@ void loop()
   delay(10); // <- fixes some issues with WiFi stability
 
   // TODO: Replace with your code here
-  if (millis() - lastMillis > 30000)
+  if (millis() - lastMillis > 50)
   {
     lastMillis = millis();
 
@@ -79,6 +97,9 @@ void loop()
     }else{
       Serial.println(request_data());
       mqtt->publishTelemetry(request_data());
+      pwm = values[1] * 10;
+      Serial.println(pwm);
+      send_to_dimmer(ADDRESS1, pwm);
       altern = 0;
     }
 
@@ -86,4 +107,5 @@ void loop()
 
   }
 }
+
 #endif

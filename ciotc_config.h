@@ -18,8 +18,11 @@
 // const char* ssid = "SFR A88D_CLOUD";
 // const char* password = "123456789";
 
-const char* ssid = "Vodafone-538FDC";
-const char* password = "7CPs4PYjQ2";
+// const char* ssid = "Vodafone-538FDC";
+// const char* password = "7CPs4PYjQ2";
+
+const char* ssid = "POCO X3 NFC";
+const char* password = "santi2022";
 
 // Cloud iot details.
 /*proj_Lucas

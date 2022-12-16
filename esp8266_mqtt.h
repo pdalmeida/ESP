@@ -31,6 +31,7 @@
 #include <CloudIoTCoreMqtt.h>
 #include "ciotc_config.h" // Wifi configuration here
 
+int values[3] = {};
 
 // !!REPLACEME!!
 // The MQTT callback function for commands and configuration updates
@@ -38,7 +39,23 @@
 void messageReceivedAdvanced(MQTTClient *client, char topic[], char bytes[], int length)
 {
   if (length > 0){
+    char ree[]= "";
+    strcpy(ree, bytes);
+    char delimiters[] = ",";
+
+    char *ptr;
+    int index = 0;
+
+    ptr = strtok(ree, delimiters);
+
+    while (ptr != NULL) {
+      values[index] = atoi(ptr);
+      ptr = strtok(NULL, delimiters);
+      index = index + 1;
+    }
+    
     Serial.printf("incoming: %s - %s\n", topic, bytes);
+    
   } else {
     Serial.printf("0\n"); // Success but no message
   }
