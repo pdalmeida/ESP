@@ -21,7 +21,9 @@
 #define ADDRESS2 0x11
 // 30-170
 
-int pwm;
+int lamp;
+int ldr=0;
+bool mov=0;
 
 
 void send_to_dimmer(int ADDRESS, int outByte){
@@ -76,6 +78,7 @@ void setup()
 }
 
 static unsigned long lastMillis = 0;
+static unsigned long lastMillis1 = 0;
 void loop()
 {
   if (!mqtt->loop())
@@ -85,27 +88,38 @@ void loop()
 
   delay(10); // <- fixes some issues with WiFi stability
 
-  // TODO: Replace with your code here
+  // Request data
   if (millis() - lastMillis > 50)
   {
     lastMillis = millis();
-
-    if (altern==1){
-      Serial.println(send_data());
-      mqtt->publishTelemetry(send_data());
-      altern = 0;
-    }else{
-      Serial.println(request_data());
-      mqtt->publishTelemetry(request_data());
-      pwm = values[1] * 10;
-      Serial.println(pwm);
-      send_to_dimmer(ADDRESS1, pwm);
-      altern = 0;
-    }
-
-
-
+  
+    Serial.println(request_data());
+    mqtt->publishTelemetry(request_data());
+    lamp = values[1] * 10;
+    Serial.println(lamp);
+    send_to_dimmer(ADDRESS1, lamp);
   }
+    
+  //Send data
+  if (millis() - lastMillis1 > 10000)
+  {
+    lastMillis1 = millis();
+
+    Serial.println(send_data_ldr());
+    mqtt->publishTelemetry(send_data_ldr());
+
+    delay(10);
+    Serial.println(send_data_mov());
+    mqtt->publishTelemetry(send_data_mov());
+
+    delay(10);
+    Serial.println(send_data_lamp());
+    mqtt->publishTelemetry(send_data_lamp());
+  }
+
+
+
+
 }
 
 #endif

@@ -77,13 +77,28 @@ NTPClient timeClient(ntpUDP, "pool.ntp.org");
 ///////////////////////////////
 // Helpers specific to this board
 ///////////////////////////////
-String send_data()
+String send_data_ldr()
 {
-  timeClient.update();
-  String epoch = "'Date': " + String(timeClient.getEpochTime());
-  String wifi = "'RSSI': " + String(WiFi.RSSI());
-  String text = "'Observation': 'Hello world'";
-  return "{'Action':'send', " + epoch + ", " + wifi + ", " + text + "}";
+  //send data ldr
+  String value = "'value': " + String(ldr);
+  String sensor_id = "'sensor_id': 44";
+  return "{'Action':'send', 'table': 'sensor_value', " + value + ", " + sensor_id + "}";
+}
+
+String send_data_mov()
+{
+  //send data ld2410
+  String value = "'value': " + String(mov);
+  String sensor_id = "'sensor_id': 45";
+  return "{'Action':'send', 'table': 'sensor_value', " + value + ", " + sensor_id + "}";
+}
+
+String send_data_lamp()
+{
+  //send data lampada
+  String value = "'value': " + String(lamp);
+  String light_id = "'light_id': " + device_id[-1];
+  return "{'Action':'send', 'table': 'brightness_value', " + value + ", " + light_id + "}";
 }
 
 String request_data()
@@ -91,6 +106,10 @@ String request_data()
   
   return "{'Action':'request','Device':'" + String(device_id) + "'}";
 }
+
+
+
+
 
 String getJwt()
 {
