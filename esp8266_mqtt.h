@@ -31,7 +31,41 @@
 #include <CloudIoTCoreMqtt.h>
 #include "ciotc_config.h" // Wifi configuration here
 
+#define vIN 5
+#define vAREF 3.3
+#define R 4000  // Voltage divider resistor value
+
+int lamp;
+int ldr=0;
+bool mov=0;
+int LDR = 0;
+int analog;
+float vADC, rLDR;
+int lightRef = 40;
+
+
 int values[3] = {};
+
+float getRLDR(float vADC) {
+  float LDR = (R * (vIN - vADC)) / vADC;             // Voltage divider to get the resistance of the LDR
+  return LDR;
+}
+
+float adconversion(int analog) {
+
+  float ADC = float(analog) * (vAREF / float(1023));  // Converts analog to voltage
+  //int lux = ???;                          // Converts resitance to lumen
+  return ADC;
+}
+
+int lightController(int light, int lightref, int spwm){
+  float kp=0.2;
+  int diff = lightref - light;
+  spwm = spwm + int(diff * kp);
+  spwm = max(min(spwm,100),0);
+
+  return spwm;
+}
 
 // !!REPLACEME!!
 // The MQTT callback function for commands and configuration updates
@@ -54,7 +88,7 @@ void messageReceivedAdvanced(MQTTClient *client, char topic[], char bytes[], int
       index = index + 1;
     }
     
-    Serial.printf("incoming: %s - %s\n", topic, bytes);
+    //Serial.printf("incoming: %s - %s\n", topic, bytes);
     
   } else {
     Serial.printf("0\n"); // Success but no message
@@ -97,7 +131,7 @@ String send_data_lamp()
 {
   //send data lampada
   String value = "'value': " + String(lamp);
-  String light_id = "'light_id': " + device_id[-1];
+  String light_id = "'light_id': 1";
   return "{'Action':'send', 'table': 'brightness_value', " + value + ", " + light_id + "}";
 }
 

@@ -21,9 +21,7 @@
 #define ADDRESS2 0x11
 // 30-170
 
-int lamp;
-int ldr=0;
-bool mov=0;
+
 
 
 void send_to_dimmer(int ADDRESS, int outByte){
@@ -79,6 +77,7 @@ void setup()
 
 static unsigned long lastMillis = 0;
 static unsigned long lastMillis1 = 0;
+int lastMillis2 = 0;
 void loop()
 {
   if (!mqtt->loop())
@@ -88,16 +87,45 @@ void loop()
 
   delay(10); // <- fixes some issues with WiFi stability
 
+  analog = analogRead(LDR);
+  vADC = adconversion(analog) - 0.15;
+  rLDR = getRLDR(vADC);
+
+  float light = (vADC/3.2) * 100;
+
+  if (millis() - lastMillis2 > 200)
+  {
+    lastMillis2 = millis();
+
+    /*
+    Serial.print("Ref: ");
+    Serial.print(lightRef);
+    Serial.print("   light: ");
+    Serial.print(light);
+    Serial.print("PWM: ");
+    Serial.println(pwm);
+    Serial.print("Vadc: ");
+    Serial.print(vADC);
+    Serial.print(" | R LDR: ");
+    Serial.println(rLDR);
+    */
+    Serial.print("Voltage:    ");
+    Serial.println(vADC); 
+    Serial.print("Light:    ");
+    Serial.println(light);
+    lamp = lightController(light, lightRef, lamp);
+    send_to_dimmer(ADDRESS1, lamp);
+  }
   // Request data
   if (millis() - lastMillis > 50)
   {
     lastMillis = millis();
   
-    Serial.println(request_data());
+    //Serial.println(request_data());
     mqtt->publishTelemetry(request_data());
-    lamp = values[1] * 10;
-    Serial.println(lamp);
-    send_to_dimmer(ADDRESS1, lamp);
+    lightRef = values[1] * 10;
+    /*Serial.println(lamp);
+    send_to_dimmer(ADDRESS1, lamp);*/
   }
     
   //Send data
