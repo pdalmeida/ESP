@@ -62,6 +62,7 @@ void loop(){
 
 
 bool altern=0;
+int ld2410 = 14; 
 
 void setup()
 {
@@ -73,11 +74,13 @@ void setup()
   timeClient.setTimeOffset(0);
   setupCloudIoT(); // Creates globals for MQTT
   pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(ld2410, INPUT);
 }
 
 static unsigned long lastMillis = 0;
 static unsigned long lastMillis1 = 0;
 int lastMillis2 = 0;
+
 void loop()
 {
   if (!mqtt->loop())
@@ -90,6 +93,7 @@ void loop()
   analog = analogRead(LDR);
   vADC = adconversion(analog) - 0.15;
   rLDR = getRLDR(vADC);
+  int buttonState = digitalRead(ld2410);
 
   float light = (vADC/3.2) * 100;
 
@@ -113,8 +117,15 @@ void loop()
     Serial.println(vADC); 
     Serial.print("Light:    ");
     Serial.println(light);
-    lamp = lightController(light, lightRef, lamp);
-    send_to_dimmer(ADDRESS1, lamp);
+    Serial.print("LD:    ");
+    Serial.println(buttonState);
+    if (values[0] == 0){
+      lamp = lightController(light, lightRef, lamp);
+      
+      if (buttonState == 0 && values[2] == 1){lamp=0;}
+      Serial.println(lamp);
+      send_to_dimmer(ADDRESS1, lamp);
+    }
   }
   // Request data
   if (millis() - lastMillis > 50)
@@ -124,8 +135,13 @@ void loop()
     //Serial.println(request_data());
     mqtt->publishTelemetry(request_data());
     lightRef = values[1] * 10;
-    /*Serial.println(lamp);
-    send_to_dimmer(ADDRESS1, lamp);*/
+    if (values[0] == 1){
+      lamp = lightRef;
+      
+      if (buttonState == 0 && values[2] == 1){lamp=0;}
+      Serial.println(lamp);
+      send_to_dimmer(ADDRESS1, lamp);
+    }
   }
     
   //Send data
@@ -144,8 +160,6 @@ void loop()
     Serial.println(send_data_lamp());
     mqtt->publishTelemetry(send_data_lamp());
   }
-
-
 
 
 }

@@ -61,6 +61,8 @@ float adconversion(int analog) {
 int lightController(int light, int lightref, int spwm){
   float kp=0.2;
   int diff = lightref - light;
+  Serial.print("Lightdiff:    ");
+  Serial.println(diff); 
   spwm = spwm + int(diff * kp);
   spwm = max(min(spwm,100),0);
 
@@ -88,7 +90,7 @@ void messageReceivedAdvanced(MQTTClient *client, char topic[], char bytes[], int
       index = index + 1;
     }
     
-    //Serial.printf("incoming: %s - %s\n", topic, bytes);
+    Serial.printf("incoming: %s - %s\n", topic, bytes);
     
   } else {
     Serial.printf("0\n"); // Success but no message
@@ -115,7 +117,7 @@ String send_data_ldr()
 {
   //send data ldr
   String value = "'value': " + String(ldr);
-  String sensor_id = "'sensor_id': 44";
+  String sensor_id = "'sensor_id': 'ESP_1_ldr'";
   return "{'Action':'send', 'table': 'sensor_value', " + value + ", " + sensor_id + "}";
 }
 
@@ -123,7 +125,7 @@ String send_data_mov()
 {
   //send data ld2410
   String value = "'value': " + String(mov);
-  String sensor_id = "'sensor_id': 45";
+  String sensor_id = "'sensor_id': 'ESP_1_movimento'";
   return "{'Action':'send', 'table': 'sensor_value', " + value + ", " + sensor_id + "}";
 }
 

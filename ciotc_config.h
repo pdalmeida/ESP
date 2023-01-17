@@ -21,8 +21,15 @@
 // const char* ssid = "Vodafone-538FDC";
 // const char* password = "7CPs4PYjQ2";
 
-const char* ssid = "POCO X3 NFC";
-const char* password = "santi2022";
+//const char* ssid = "POCO X3 NFC";
+//const char* password = "santi2022";
+
+const char* ssid = "NOS_Internet_57FF";
+const char* password = "16760355";
+
+//Vasco
+//const char* ssid = "AndroidAP33D7";
+//const char* password = "123abc123";
 
 // Cloud iot details.
 /*proj_Lucas
